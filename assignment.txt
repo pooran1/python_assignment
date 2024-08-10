@@ -1,0 +1,86 @@
+
+-- # ## Aggregate 2 (Group By) 
+-- # Write a query to get the number of employees who has the same job title.
+-- # list down the lowest salary of the employee of every manager and also display the manager_id.
+-- # list down the total salaries of every deparment # NOTE: salary should be in ascending order
+-- # list down the average salaries of every department exluding IT Deparment
+-- # fetch the top 3 department who is taking the highest salary among all other deparment
+-- # list down all the department (job_id) whose avg salary is more than overall avg salary of the whole company
+-- # Write a query to get employee ID, last name, and date of first salary of the employees.
+-- # find the department that contains more than 10 employees
+-- # Write a query to get the years in which more than 10 employees joined.
+
+sql
+
+-- Get the number of employees who have the same job title.
+SELECT job_id, COUNT(*) AS employee_count
+FROM employees
+GROUP BY job_id;
+
+-- List down the lowest salary of the employee of every manager and also display the manager_id.
+SELECT manager_id, MIN(salary) AS lowest_salary
+FROM employees
+GROUP BY manager_id;
+
+-- List down the total salaries of every department.
+-- Note: Salary should be in ascending order.
+SELECT department_id, SUM(salary) AS total_salary
+FROM employees
+GROUP BY department_id
+ORDER BY total_salary ASC;
+
+-- List down the average salaries of every department excluding the IT department.
+SELECT department_id, AVG(salary) AS avg_salary
+FROM employees
+WHERE department_id != 'IT'
+GROUP BY department_id;
+
+-- Fetch the top 3 departments that have the highest salary expenditure among all other departments.
+SELECT department_id, SUM(salary) AS total_salary
+FROM employees
+GROUP BY department_id
+ORDER BY total_salary DESC
+LIMIT 3;
+
+-- List down all the departments (job_id) whose average salary is more than the overall average salary of the whole company.
+SELECT job_id, AVG(salary) AS avg_salary
+FROM employees
+GROUP BY job_id
+HAVING AVG(salary) > (SELECT AVG(salary) FROM employees);
+
+-- Get employee ID, last name, and date of first salary of the employees.
+SELECT employee_id, last_name, MIN(hire_date) AS date_of_first_salary
+FROM employees
+GROUP BY employee_id, last_name;
+
+-- Find the department that contains more than 10 employees.
+SELECT department_id, COUNT(*) AS employee_count
+FROM employees
+GROUP BY department_id
+HAVING COUNT(*) > 10;
+
+-- Get the years in which more than 10 employees joined.
+SELECT EXTRACT(YEAR FROM hire_date) AS year_joined, COUNT(*) AS employee_count
+FROM employees
+GROUP BY EXTRACT(YEAR FROM hire_date)
+HAVING COUNT(*) > 10;
+
+-- # Sub Query
+-- # Write a query to get department name, manager name, and salary of the manager for all managers whose experience is more than 5 years.
+-- # Write down the query to display the minimum salary that a company is giving also display the count. Use table employees.
+-- -- # Write down the query to display the maximum salary that a company is giving also display the count. Use table employees.
+
+sql
+-- Get department name, manager name, and salary of the manager for all managers whose experience is more than 5 years.
+SELECT department_id, manager_id, salary
+FROM employees
+WHERE manager_id IS NOT NULL
+AND CURRENT_DATE - hire_date > INTERVAL '5' YEAR;
+
+-- Display the minimum salary that a company is giving and also display the count. Use table employees.
+SELECT MIN(salary) AS min_salary, COUNT(*) AS employee_count
+FROM employees;
+
+-- Display the maximum salary that a company is giving and also display the count. Use table employees.
+SELECT MAX(salary) AS max_salary, COUNT(*) AS employee_count
+FROM employees;
